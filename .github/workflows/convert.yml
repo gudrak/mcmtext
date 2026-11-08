@@ -1,0 +1,33 @@
+name: Convertir texturas a Mineclonia
+
+on:
+  workflow_dispatch:     # lo disparás a mano desde la pestaña Actions
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar repo
+        uses: actions/checkout@v4
+
+      - name: Instalar Python y dependencias
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+
+      - name: Dar permisos de ejecución
+        run: chmod +x Texture_Converter.py
+
+      - name: Descomprimir resource pack
+        run: |
+          mkdir -p resourcepack
+          unzip -o input/*.zip -d resourcepack
+
+      - name: Convertir texturas
+        run: ./Texture_Converter.py -i resourcepack -o output
+
+      - name: Subir resultado como artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: texture-pack-convertido
+          path: output/
